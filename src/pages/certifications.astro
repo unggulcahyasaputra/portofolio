@@ -1,0 +1,68 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const certifications = await getCollection('certifications');
+const sortedCerts = certifications.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<Layout title="Certifications">
+  <section class="py-20">
+    <div class="container-custom">
+      <div class="text-center mb-16">
+        <h1 class="section-heading">Certifications</h1>
+        <p class="section-subheading mx-auto">
+          Professional certifications validating expertise in various technology domains.
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto space-y-6">
+        {sortedCerts.map(cert => (
+          <div class="card">
+            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+              <div class="flex-1">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">{cert.data.title}</h3>
+                <p class="text-primary-600 dark:text-primary-400 font-medium">{cert.data.issuer}</p>
+                {cert.data.description && (
+                  <p class="text-gray-600 dark:text-gray-400 mt-2">{cert.data.description}</p>
+                )}
+              </div>
+              <div class="text-right">
+                <div class="text-sm text-gray-500 dark:text-gray-500">
+                  <span class="block">
+                    Issued: {new Date(cert.data.date).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
+                  </span>
+                  {cert.data.expiryDate && (
+                    <span class="block">
+                      Expires: {new Date(cert.data.expiryDate).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
+                    </span>
+                  )}
+                </div>
+                {cert.data.credentialId && (
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                    ID: {cert.data.credentialId}
+                  </p>
+                )}
+              </div>
+            </div>
+            {cert.data.credentialUrl && (
+              <div class="mt-4 pt-4 border-t border-gray-200 dark:border-dark-border">
+                <a
+                  href={cert.data.credentialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center text-primary-600 dark:text-primary-400 hover:underline"
+                >
+                  Verify Credential
+                  <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,90 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedAt?: string;
+}
+
+const {
+  title,
+  description = 'Professional portfolio of Unggul Cahya Saputra - Founder, CTO, and technology leader specializing in open-source, cybersecurity, and digital transformation.',
+  image = '/og-image.png',
+  type = 'website',
+  publishedAt
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta Tags -->
+    <title>{title} | Unggul Cahya Saputra</title>
+    <meta name="title" content={`${title} | Unggul Cahya Saputra`} />
+    <meta name="description" content={description} />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <meta property="og:site_name" content="Unggul Cahya Saputra" />
+    {publishedAt && <meta property="article:published_time" content={publishedAt} />}
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.site)} />
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": type === 'article' ? 'Article' : 'Person',
+      name: 'Unggul Cahya Saputra',
+      url: canonicalURL.toString(),
+      jobTitle: type === 'article' ? undefined : 'Founder & CTO',
+      description: description,
+      ...(type === 'article' && {
+        headline: title,
+        datePublished: publishedAt,
+        author: {
+          "@type": "Person",
+          name: "Unggul Cahya Saputra"
+        }
+      })
+    })} />
+
+    <!-- Theme Script -->
+    <script is:inline>
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

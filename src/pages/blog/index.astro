@@ -1,0 +1,94 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const sortedPosts = posts.sort((a, b) => new Date(b.data.publishedAt).getTime() - new Date(a.data.publishedAt).getTime());
+
+const allTags = [...new Set(posts.flatMap(p => p.data.tags))];
+---
+
+<Layout title="Blog">
+  <section class="py-20">
+    <div class="container-custom">
+      <div class="text-center mb-16">
+        <h1 class="section-heading">Blog</h1>
+        <p class="section-subheading mx-auto">
+          Thoughts, insights, and articles on technology, cybersecurity, and digital transformation.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-12 justify-center">
+        <button class="tag cursor-pointer hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors filter-btn active" data-filter="all">
+          All
+        </button>
+        {allTags.map(tag => (
+          <button class="tag cursor-pointer hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors filter-btn" data-filter={tag}>
+            {tag}
+          </button>
+        ))}
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="posts-grid">
+        {sortedPosts.map(post => (
+          <article class="card group" data-tags={JSON.stringify(post.data.tags)}>
+            <div class="mb-4">
+              <div class="flex gap-2 mb-3">
+                {post.data.tags.slice(0, 3).map(tag => (
+                  <span class="tag text-xs">{tag}</span>
+                ))}
+              </div>
+              <a href={`/blog/${post.slug}`}>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                  {post.data.title}
+                </h2>
+              </a>
+            </div>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">{post.data.excerpt}</p>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center text-sm text-gray-500 dark:text-gray-500">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                {new Date(post.data.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </div>
+              <a href={`/blog/${post.slug}`} class="text-primary-600 dark:text-primary-400 hover:underline text-sm font-medium">
+                Read more →
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      {posts.length === 0 && (
+        <div class="text-center py-12">
+          <p class="text-gray-500 dark:text-gray-500">No blog posts yet.</p>
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const postsGrid = document.getElementById('posts-grid');
+  const posts = postsGrid?.querySelectorAll('article');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.getAttribute('data-filter');
+
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      posts?.forEach(post => {
+        const tags = JSON.parse(post.getAttribute('data-tags') || '[]');
+        if (filter === 'all' || tags.includes(filter)) {
+          post.style.display = 'block';
+        } else {
+          post.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>

@@ -1,0 +1,111 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const experiences = await getCollection('experiences');
+const certifications = await getCollection('certifications');
+
+const sortedExperiences = experiences.sort((a, b) => new Date(b.data.startDate).getTime() - new Date(a.data.startDate).getTime());
+---
+
+<Layout title="Resume">
+  <section class="py-20">
+    <div class="container-custom">
+      <div class="text-center mb-12">
+        <h1 class="section-heading">Resume</h1>
+        <p class="section-subheading mx-auto mb-8">
+          Download my resume or view the overview below.
+        </p>
+        <a
+          href="/resume.pdf"
+          download
+          class="btn-primary"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download PDF
+        </a>
+      </div>
+
+      <div class="max-w-4xl mx-auto space-y-12">
+        <!-- Summary -->
+        <div class="card">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Professional Summary</h2>
+          <p class="text-gray-600 dark:text-gray-400">
+            Experienced technology leader with over 15 years of expertise in building innovative solutions across multiple sectors. Founder and CTO of multiple ventures including AhliWeb, SatpamSiber, and Literasi.top. Passionate about open-source innovation, cybersecurity awareness, and digital transformation in Indonesia.
+          </p>
+        </div>
+
+        <!-- Experience -->
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Work Experience</h2>
+          <div class="space-y-6">
+            {sortedExperiences.map(experience => (
+              <div class="card">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
+                  <div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">{experience.data.title}</h3>
+                    <p class="text-primary-600 dark:text-primary-400 font-medium">{experience.data.organization}</p>
+                  </div>
+                  <div class="text-sm text-gray-500 dark:text-gray-500">
+                    {new Date(experience.data.startDate).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
+                    {experience.data.current ? ' - Present' : ` - ${experience.data.endDate && new Date(experience.data.endDate).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}`}
+                  </div>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">{experience.data.description}</p>
+                <div class="flex flex-wrap gap-2">
+                  {experience.data.skills.map(skill => (
+                    <span class="tag text-xs">{skill}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Skills -->
+        <div class="card">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Core Competencies</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Technical</h3>
+              <div class="flex flex-wrap gap-2">
+                <span class="tag">Web Development</span>
+                <span class="tag">Cybersecurity</span>
+                <span class="tag">AI/ML</span>
+                <span class="tag">Cloud Infrastructure</span>
+                <span class="tag">Open Source</span>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Leadership</h3>
+              <div class="flex flex-wrap gap-2">
+                <span class="tag">Strategic Planning</span>
+                <span class="tag">Team Building</span>
+                <span class="tag">Digital Transformation</span>
+                <span class="tag">Business Development</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Certifications -->
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Certifications</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {certifications.map(cert => (
+              <div class="card">
+                <h3 class="font-bold text-gray-900 dark:text-white">{cert.data.title}</h3>
+                <p class="text-primary-600 dark:text-primary-400 text-sm">{cert.data.issuer}</p>
+                <p class="text-gray-500 dark:text-gray-500 text-xs mt-1">
+                  {new Date(cert.data.date).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

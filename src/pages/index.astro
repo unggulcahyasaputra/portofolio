@@ -1,0 +1,179 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const ventures = await getCollection('ventures');
+const experiences = await getCollection('experiences');
+const blogPosts = await getCollection('blog');
+
+const featuredVentures = ventures.filter(v => v.data.featured).slice(0, 3);
+const featuredPosts = blogPosts.filter(p => p.data.featured).slice(0, 3);
+---
+
+<Layout title="Home">
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden bg-gradient-to-b from-primary-50/50 to-white dark:from-dark-bg dark:to-dark-bg py-20 md:py-32">
+    <div class="container-custom">
+      <div class="max-w-4xl">
+        <p class="text-primary-600 dark:text-primary-400 font-medium mb-4 animate-fade-in">Hello, I'm</p>
+        <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 animate-slide-up">
+          Unggul Cahya <span class="text-gradient">Saputra</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl animate-slide-up">
+          Founder & CTO building open-source solutions, driving digital transformation, and strengthening cybersecurity in Indonesia.
+        </p>
+        <div class="flex flex-wrap gap-4 animate-slide-up">
+          <a href="/contact" class="btn-primary">
+            <span>Let's Connect</span>
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <a href="/ventures" class="btn-secondary">
+            View My Work
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Ventures -->
+  <section class="py-20 bg-gray-50 dark:bg-dark-card/50">
+    <div class="container-custom">
+      <div class="text-center mb-12">
+        <h2 class="section-heading">Featured Ventures</h2>
+        <p class="section-subheading mx-auto">
+          Building innovative solutions across technology, security, and education sectors.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {featuredVentures.map(venture => (
+          <a href="/ventures" class="card group">
+            <div class="flex items-start justify-between mb-4">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                {venture.data.name}
+              </h3>
+              {venture.data.website && (
+                <svg class="w-5 h-5 text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              )}
+            </div>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">{venture.data.description}</p>
+            <div class="flex flex-wrap gap-2">
+              {venture.data.technologies.slice(0, 3).map(tech => (
+                <span class="tag text-xs">{tech}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/ventures" class="btn-secondary">
+          View All Ventures
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience Highlights -->
+  <section class="py-20">
+    <div class="container-custom">
+      <div class="text-center mb-12">
+        <h2 class="section-heading">Professional Journey</h2>
+        <p class="section-subheading mx-auto">
+          Leading technology initiatives across multiple organizations and sectors.
+        </p>
+      </div>
+      <div class="space-y-6 max-w-3xl mx-auto">
+        {experiences.slice(0, 3).map(experience => (
+          <div class="card">
+            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+              <div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">{experience.data.title}</h3>
+                <p class="text-primary-600 dark:text-primary-400 font-medium">{experience.data.organization}</p>
+                <p class="text-gray-500 dark:text-gray-500 text-sm mt-1">
+                  {new Date(experience.data.startDate).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
+                  {experience.data.current ? ' - Present' : ` - ${experience.data.endDate && new Date(experience.data.endDate).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`}
+                </p>
+              </div>
+              {experience.data.location && (
+                <span class="text-sm text-gray-500 dark:text-gray-500 whitespace-nowrap">
+                  {experience.data.location}
+                </span>
+              )}
+            </div>
+            <p class="text-gray-600 dark:text-gray-400 mt-4">{experience.data.description}</p>
+          </div>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/experience" class="btn-secondary">
+          View Full Timeline
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Articles -->
+  <section class="py-20 bg-gray-50 dark:bg-dark-card/50">
+    <div class="container-custom">
+      <div class="text-center mb-12">
+        <h2 class="section-heading">Latest Insights</h2>
+        <p class="section-subheading mx-auto">
+          Thoughts on technology, cybersecurity, and digital transformation in Indonesia.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {featuredPosts.map(post => (
+          <a href={`/blog/${post.slug}`} class="card group">
+            <div class="mb-4">
+              <div class="flex gap-2 mb-3">
+                {post.data.tags.slice(0, 2).map(tag => (
+                  <span class="tag text-xs">{tag}</span>
+                ))}
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                {post.data.title}
+              </h3>
+            </div>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">{post.data.excerpt}</p>
+            <div class="flex items-center text-sm text-gray-500 dark:text-gray-500">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {new Date(post.data.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </div>
+          </a>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/blog" class="btn-secondary">
+          Read More Articles
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20">
+    <div class="container-custom">
+      <div class="bg-primary-600 dark:bg-primary-900/30 rounded-2xl p-8 md:p-12 text-center">
+        <h2 class="text-2xl md:text-3xl font-bold text-white dark:text-white mb-4">
+          Let's Build Something Together
+        </h2>
+        <p class="text-primary-100 dark:text-primary-200 max-w-2xl mx-auto mb-8">
+          Whether you're looking for technology consulting, partnership opportunities, or just want to discuss digital transformation in Indonesia, I'd love to connect.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="/contact" class="bg-white text-primary-600 px-8 py-3 rounded-lg font-medium hover:bg-primary-50 transition-colors">
+            Get in Touch
+          </a>
+          <a href="/resume" class="border-2 border-white text-white px-8 py-3 rounded-lg font-medium hover:bg-primary-700 transition-colors">
+            Download Resume
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
