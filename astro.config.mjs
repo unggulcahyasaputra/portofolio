@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  site: 'https://unggul.id',
+  site: 'https://unggul.top',
   integrations: [tailwind()],
   markdown: {
     shikiConfig: {

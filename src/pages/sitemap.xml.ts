@@ -5,7 +5,7 @@ export async function GET() {
   const experiences = await getCollection('experiences');
   const ventures = await getCollection('ventures');
 
-  const site = 'https://unggul.id';
+  const site = 'https://unggul.top';
 
   const pages = [
     '',
